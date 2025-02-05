@@ -1,0 +1,16 @@
+{
+	"extends": "asconfig.template.json",
+	"config": "air",
+	"compilerOptions": {
+		"title": "Console Autocomplete",
+		"description": "Console Autocomplete",
+		"publisher": "SoleVaultBoy",
+		"creator": "SoleVaultBoy",
+		"source-path": [
+			"src",
+			"include"
+		],
+		"output": "../ConsoleAutocomplete.swf"
+	},
+	"mainClass": "ConsoleAutocomplete"
+}

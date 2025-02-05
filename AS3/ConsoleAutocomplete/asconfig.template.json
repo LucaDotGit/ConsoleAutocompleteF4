@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"target-player": "11.2",
+		"swf-version": 15,
+		"default-frame-rate": 1,
+		"use-network": false
+	},
+	"mainClass": ""
+}

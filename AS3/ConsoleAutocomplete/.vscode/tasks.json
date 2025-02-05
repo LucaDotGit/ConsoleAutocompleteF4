@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "actionscript",
+			"debug": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "ActionScript: Compile Debug"
+		},
+		{
+			"type": "actionscript",
+			"debug": false,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "ActionScript: Compile Release"
+		}
+	]
+}
