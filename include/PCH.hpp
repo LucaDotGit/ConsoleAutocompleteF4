@@ -23,7 +23,7 @@
 #include <cwchar>
 #include <cwctype>
 
-// CXX
+// C++
 #include <algorithm>
 #include <any>
 #include <array>
@@ -57,6 +57,7 @@
 #include <iterator>
 #include <latch>
 #include <limits>
+#include <list>
 #include <locale>
 #include <map>
 #include <mdspan>
@@ -105,13 +106,15 @@
 #include <vector>
 #include <version>
 
-#include "F4SE/F4SE.hpp"
-#include "RE/Fallout.hpp"
+#include <F4SE/F4SE.hpp>
+#include <RE/Fallout.hpp>
 
-#define DLLEXPORT __declspec(dllexport)
+using namespace std::literals;
 
 namespace logger = F4SE::log;
-using namespace std::literals;
+namespace stl = F4SE::stl;
+
+#define DLLEXPORT __declspec(dllexport)
 
 #include "Plugin.hpp"
 

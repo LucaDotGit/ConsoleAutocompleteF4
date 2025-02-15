@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<suggestion>
+		<!-- Default: 0.75 -->
+		<alpha>0.75</alpha>
+		<!-- Default: true -->
+		<hasBackground>true</hasBackground>
+		<!-- Default: 0x000000 -->
+		<backgroundColor>0x000000</backgroundColor>
+	</suggestion>
+	<!--
+		See: https://airsdk.dev/reference/actionscript/3.0/flash/ui/Keyboard.html#summaryTableConstant
+	-->
+	<keybinds>
+		<!-- Default: Tab (9) -->
+		<keybind action="suggestionNext" keyCode="9" />
+		<!-- Default: Control (17) -->
+		<keybind action="suggestionPrevious" keyCode="17" />
+		<!-- Default: Right (39) -->
+		<keybind action="suggestionPaste" keyCode="39" />
+		<!-- Default: Alt (18) -->
+		<keybind action="suggestionToggle" keyCode="18" />
+
+		<!-- These keybinds are hardcoded in the game, so they are likely never going to be changed -->
+		<!-- Default: Up (38) -->
+		<keybind action="commandUp" keyCode="38" />
+		<!-- Default: Down (40) -->
+		<keybind action="commandDown" keyCode="40" />
+		<!-- Default: Enter (13) -->
+		<keybind action="commandExecute" keyCode="13" />
+		<!-- Default: Numpad Enter (108) -->
+		<keybind action="commandExecuteSecondary" keyCode="108" />
+		<!-- Default: Backquote (192) -->
+		<keybind action="consoleClose" keyCode="192" />
+	</keybinds>
+</settings>

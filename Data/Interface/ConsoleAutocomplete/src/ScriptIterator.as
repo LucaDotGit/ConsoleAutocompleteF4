@@ -16,11 +16,6 @@ package
 			return _scripts.length == 0;
 		}
 
-		public function get current():ScriptFunction
-		{
-			return isEmpty ? null : _scripts[_index];
-		}
-
 		public function hasNext():Boolean
 		{
 			return _index + 1 < _scripts.length;
@@ -29,6 +24,11 @@ package
 		public function hasPrevious():Boolean
 		{
 			return _index - 1 > 0;
+		}
+
+		public function get current():ScriptFunction
+		{
+			return isEmpty ? null : _scripts[_index];
 		}
 
 		public function next():ScriptFunction
@@ -63,17 +63,17 @@ package
 			_index = (_index - 1 + _scripts.length) % _scripts.length;
 		}
 
-		public function reset():void
-		{
-			_index = isEmpty ? -1 : 0;
-		}
-
 		public function sort():void
 		{
 			_scripts.sort(function(a:ScriptFunction, b:ScriptFunction):int
 			{
 				return StringUtils.compareIgnoreCase(a.name, b.name);
 			});
+		}
+
+		public function reset():void
+		{
+			_index = isEmpty ? -1 : 0;
 		}
 
 		public function clear():void

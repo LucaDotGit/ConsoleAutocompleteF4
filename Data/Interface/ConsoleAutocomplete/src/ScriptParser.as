@@ -31,7 +31,7 @@ package
 			}
 
 			var commands:Array = StringUtils.trim(value)
-				.replace(Separators.QUOTE_PATTERN, Separators.WHITESPACE)
+				.replace(Separators.QUOTE_PATTERN, " ")
 				.split(Separators.LINE_PATTERN);
 
 			for each (var command:String in commands)
@@ -39,7 +39,7 @@ package
 				var commandParts:Array = StringUtils.splitBy(command, Separators.FUNCTION_PATTERN);
 
 				var funcPart:String = commandParts.length < 2 ? commandParts[0] : commandParts[1];
-				var func:String = StringUtils.substringBy(funcPart, Separators.WHITESPACE);
+				var func:String = StringUtils.substringBy(funcPart, " ");
 
 				var args:Array = StringUtils.trim(funcPart.substring(func.length))
 					.split(Separators.PARAMETER_PATTERN);

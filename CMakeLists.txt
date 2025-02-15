@@ -1,30 +1,12 @@
-# --- CMake ---
+# --- Project ---
 
 cmake_minimum_required(VERSION 3.30)
 
-macro(set_from_environment VARIABLE)
-	if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
-		set(${VARIABLE} $ENV{${VARIABLE}})
-	endif()
-endmacro()
-
-set_from_environment(VCPKG_ROOT)
-
-if(NOT DEFINED VCPKG_ROOT)
-	message(FATAL_ERROR "The environment variable VCPKG_ROOT is not set.")
-endif()
-
-set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "")
-set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" CACHE STRING "")
-
-# --- Project ---
-
-set(PROJECT_NAME "ConsoleAutocomplete" CACHE STRING "")
-set(PROJECT_AUTHOR "SoleVaultBoy" CACHE STRING "")
-set(PROJECT_VERSION 1.1.0.0 CACHE STRING "")
-set(PROJECT_LICENSE "MIT License" CACHE STRING "")
-set(PROJECT_DESCRIPTION "${PROJECT_NAME}" CACHE STRING "")
+set(PROJECT_NAME "ConsoleAutocomplete")
+set(PROJECT_AUTHOR "SoleVaultBoy")
+set(PROJECT_VERSION 1.2.0.0)
+set(PROJECT_LICENSE "MIT License")
+set(PROJECT_DESCRIPTION "${PROJECT_NAME}")
 
 project(
 	"${PROJECT_NAME}"
@@ -57,19 +39,18 @@ option(COPY_BUILD_TO_F4SE "Copy the built to F4SE's plugin directory" OFF)
 
 # --- Output Path ---
 
-if(COPY_BUILD_TO_F4SE AND COPY_BUILD_TO_PARENT)
-	message(WARNING "COPY_BUILD_TO_F4SE and COPY_BUILD_TO_PARENT should not be enabled at the same time.")
+if(COPY_BUILD_TO_PARENT AND COPY_BUILD_TO_F4SE)
+	message(FATAL_ERROR "COPY_BUILD_TO_F4SE and COPY_BUILD_TO_PARENT should not be enabled at the same time.")
 endif()
 
 if (COPY_BUILD_TO_PARENT)
-	set(OUTPUT_PATH "${CMAKE_CURRENT_LIST_DIR}/..")
-elseif(COPY_BUILD_TO_PARENT)
-	set_from_environment(FO4_ROOT)
-
-	if (NOT DEFINED FO4_ROOT)
+	set(OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/..")
+elseif(COPY_BUILD_TO_F4SE)
+	if (NOT DEFINED FO4_ROOT AND NOT DEFINED ENV{FO4_ROOT})
 		message(FATAL_ERROR "The environment variable FO4_ROOT is not set.")
 	endif()
 
+	set(FO4_ROOT "$ENV{FO4_ROOT}" CACHE STRING "")
 	set(OUTPUT_PATH "${FO4_ROOT}/Data/F4SE/Plugins")
 endif()
 
@@ -79,11 +60,8 @@ file(
 	GLOB_RECURSE
 	SOURCES
 	CONFIGURE_DEPENDS
-		"${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
-		"${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
-		"${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
-		"${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
-		"${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/include/*"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/*"
 )
 
 list(

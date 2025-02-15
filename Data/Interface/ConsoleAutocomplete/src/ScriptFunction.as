@@ -61,8 +61,8 @@ package
 			var description:String = formatDescription();
 
 			return name +
-				(params ? Separators.WHITESPACE + params : params) +
-				(description ? Separators.WHITESPACE + description : description);
+				(params ? " " + params : params) +
+				(description ? " " + description : description);
 		}
 
 		private function formatName(index:int = -1):String
@@ -93,7 +93,7 @@ package
 
 				if (i < _params.length - 1)
 				{
-					params += Separators.PARAMETER + Separators.WHITESPACE;
+					params += Separators.PARAMETER + " ";
 				}
 			}
 
@@ -107,7 +107,7 @@ package
 				return "";
 			}
 
-			var description:String = Separators.COMMENT + Separators.WHITESPACE + _description;
+			var description:String = Separators.COMMENT + " " + _description;
 			return ColorStyles.format(description, ColorStyles.COMMENT);
 		}
 	}

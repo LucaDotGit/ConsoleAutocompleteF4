@@ -6,7 +6,7 @@ package
 		public static const PARAMETER:uint = 0x9CDCFE;
 		public static const COMMENT:uint = 0x6A9955;
 
-		public static const ENTITIES:Object = {
+		public static const HTML_ENTITIES:Object = {
 			"<": "&lt;",
 			">": "&gt;"
 		};
@@ -21,9 +21,9 @@ package
 		{
 			var sanitizedText:String = text;
 
-			for (var entity:String in ENTITIES)
+			for (var entity:String in HTML_ENTITIES)
 			{
-				var replacement:String = ENTITIES[entity];
+				var replacement:String = HTML_ENTITIES[entity];
 				var pattern:RegExp = new RegExp(entity, "g");
 
 				sanitizedText = sanitizedText.replace(pattern, replacement);

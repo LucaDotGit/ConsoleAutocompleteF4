@@ -3,10 +3,13 @@ package
 	import flash.display.*;
 	import flash.events.*;
 	import flash.text.*;
-	import flash.ui.*;
+
+	import scaleform.gfx.*;
 
 	public final class ConsoleAutocomplete extends MovieClip
 	{
+		private static const SETTINGS_PATH:String = "ConsoleAutocomplete.xml";
+
 		private var _root:MovieClip;
 		private var _menu:MovieClip;
 
@@ -21,12 +24,26 @@ package
 		private var _commands:ScriptStore;
 		private var _commandIterator:ScriptIterator;
 		private var _commandParser:ScriptParser;
+		private var _settings:Settings;
+
+		private var _displayWidth:Number;
+		private var _displayHeight:Number;
 
 		public function ConsoleAutocomplete()
 		{
-			trace("ConsoleAutocomplete is starting...");
+			trace("ConsoleAutocomplete: Starting...");
 
-			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			Settings.load(SETTINGS_PATH, onSettingsLoadComplete, onSettingsLoadFail);
+		}
+
+		public function get isSuggestionsVisible():Boolean
+		{
+			return _commandSuggestion.visible;
+		}
+
+		public function set isSuggestionsVisible(value:Boolean):void
+		{
+			_commandSuggestion.visible = value;
 		}
 
 		public function get isRefSelected():Boolean
@@ -34,14 +51,49 @@ package
 			return !!_currentSelection.text;
 		}
 
-		public function get currentEntry():ScriptEntry
+		public function get menu():MovieClip
 		{
-			return _commandParser.last;
+			return _menu;
 		}
 
-		public function get selectedCommand():ScriptFunction
+		public function get f4se():Object
 		{
-			return _commandIterator.current;
+			return _f4se;
+		}
+
+		public function get codeObject():Object
+		{
+			return _codeObject;
+		}
+
+		public function get commandEntry():TextField
+		{
+			return _commandEntry;
+		}
+
+		public function get commandSuggestions():TextField
+		{
+			return _commandSuggestion;
+		}
+
+		public function get commands():ScriptStore
+		{
+			return _commands;
+		}
+
+		public function get commandIterator():ScriptIterator
+		{
+			return _commandIterator;
+		}
+
+		public function get commandParser():ScriptParser
+		{
+			return _commandParser;
+		}
+
+		public function get settings():Settings
+		{
+			return _settings;
 		}
 
 		public function nextSuggestion():void
@@ -63,10 +115,10 @@ package
 				return;
 			}
 
-			var lastIndex:int = _commandEntry.text.length - currentEntry.func.length;
-			var entry:String = _commandEntry.text.substring(0, lastIndex);
+			var lastIndex:int = _commandEntry.text.length - _commandParser.last.func.length;
+			var command:String = _commandEntry.text.substring(0, lastIndex);
 
-			_commandEntry.text = entry + selectedCommand.name;
+			_commandEntry.text = command + _commandIterator.current.name;
 			_commandEntry.setSelection(_commandEntry.text.length, _commandEntry.text.length);
 
 			updateSuggestions();
@@ -82,9 +134,9 @@ package
 				return;
 			}
 
-			var includeRefs:Boolean = isRefSelected || currentEntry.hasRef;
+			var includeRefs:Boolean = isRefSelected || _commandParser.last.hasRef;
 
-			_commandIterator = _commands.find(currentEntry.func, includeRefs);
+			_commandIterator = _commands.find(_commandParser.last.func, includeRefs);
 			_commandIterator.sort();
 
 			updateSuggestionText();
@@ -98,35 +150,86 @@ package
 				return;
 			}
 
-			var nameIndex:int = currentEntry.func.length;
-			var paramIndex:int = currentEntry.argIndex;
+			var nameIndex:int = _commandParser.last.func.length;
+			var paramIndex:int = _commandParser.last.argIndex;
+			var suggestion:String = _commandIterator.current.format(nameIndex, paramIndex);
 
-			var suggestion:String = selectedCommand.format(nameIndex, paramIndex);
-			_commandSuggestion.htmlText = currentEntry.func + suggestion;
+			_commandSuggestion.wordWrap = false;
+			_commandSuggestion.htmlText = _commandParser.last.func + suggestion;
+			_commandSuggestion.wordWrap = _commandSuggestion.textWidth > _displayWidth - _commandSuggestion.x;
+			_commandSuggestion.width = _displayWidth - _commandSuggestion.x;
 		}
 
 		public function clearSuggestion():void
 		{
-			_commandSuggestion.text = "";
 			_commandIterator.clear();
+
+			_commandSuggestion.text = "";
+			_commandSuggestion.wordWrap = false;
 		}
 
 		public function clear():void
 		{
 			clearSuggestion();
 			_commandParser.clear();
+
+			isSuggestionsVisible = true;
+		}
+
+		private function onSettingsLoadComplete(settings:Settings):void
+		{
+			trace("ConsoleAutocomplete: Settings loaded");
+
+			_settings = settings;
+
+			if (stage)
+			{
+				setup();
+			}
+			else
+			{
+				addEventListener(Event.ADDED_TO_STAGE, onAddedToStage, false, 0, true);
+			}
+		}
+
+		private function onSettingsLoadFail(settings:Settings):void
+		{
+			trace("ConsoleAutocomplete: Failed to load settings");
+
+			_settings = settings;
+
+			if (stage)
+			{
+				setup();
+			}
+			else
+			{
+				addEventListener(Event.ADDED_TO_STAGE, onAddedToStage, false, 0, true);
+			}
 		}
 
 		private function onAddedToStage(event:Event):void
 		{
-			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			setup();
+		}
+
+		private function setup():void
+		{
+			trace("ConsoleAutocomplete: Setup");
 
 			setupVariables();
 			setupTextFields();
+
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
 
 		private function setupVariables():void
 		{
+			Extensions.enabled = true;
+
+			_displayWidth = stage.stageWidth;
+			_displayHeight = stage.stageHeight;
+
 			_root = stage.getChildAt(0) as MovieClip;
 			_menu = parent.parent as MovieClip;
 
@@ -156,18 +259,29 @@ package
 			_commandPrompt.type = TextFieldType.DYNAMIC;
 			_commandEntry.tabEnabled = false;
 
-			_commandSuggestion = new TextField();
-			_commandSuggestion.x = _commandEntry.x;
-			_commandSuggestion.y = _commandEntry.y - _commandEntry.height / 1.75;
+			var format:TextFormat = new TextFormat();
+			format.font = _commandEntry.defaultTextFormat.font;
+			format.size = _commandEntry.defaultTextFormat.size;
+			format.color = _commandEntry.defaultTextFormat.color;
 
+			_commandSuggestion = new TextField();
 			_commandSuggestion.defaultTextFormat = _commandEntry.defaultTextFormat;
-			_commandSuggestion.background = true;
-			_commandSuggestion.backgroundColor = 0x000000;
+			_commandSuggestion.text = "";
+			_commandSuggestion.autoSize = TextFieldAutoSize.LEFT;
+
+			_commandSuggestion.alpha = settings.suggestionAlpha;
+			_commandSuggestion.background = settings.suggestionHasBackground;
+			_commandSuggestion.backgroundColor = _settings.suggestionBackgroundColor;
+
+			_commandSuggestion.x = _commandEntry.x;
+			_commandSuggestion.y = _commandEntry.y;
+
+			TextFieldEx.setNoTranslate(_commandSuggestion, true);
+			TextFieldEx.setVerticalAutoSize(_commandSuggestion, TextFieldEx.VALIGN_CENTER);
+			TextFieldEx.setVerticalAlign(_commandSuggestion, TextFieldEx.VALIGN_BOTTOM);
 
 			_commandSuggestion.selectable = false;
 			_commandSuggestion.mouseEnabled = false;
-
-			_commandSuggestion.autoSize = TextFieldAutoSize.LEFT;
 
 			_menu.addChild(_commandSuggestion);
 			_menu.addEventListener(Event.RESIZE, onMenuResize);
@@ -194,16 +308,16 @@ package
 			{
 				// This doesn't seem to fire on key up,
 				// so it's done here instead.
-				case Keyboard.BACKQUOTE:
+				case _settings.consoleClose:
 					clear();
 					break;
-				case Keyboard.TAB:
+				case _settings.suggestionNext:
 					nextSuggestion();
 					break;
-				case Keyboard.CONTROL:
+				case _settings.suggestionPrevious:
 					previousSuggestion();
 					break;
-				case Keyboard.RIGHT:
+				case _settings.suggestionPaste:
 					if (_commandEntry.selectionEndIndex == _commandEntry.text.length)
 					{
 						pasteSuggestion();
@@ -218,12 +332,12 @@ package
 			{
 				// Up and Down don't fire on key down,
 				// so the suggestion is updated here.
-				case Keyboard.UP:
-				case Keyboard.DOWN:
+				case _settings.commandUp:
+				case _settings.commandDown:
 					updateSuggestions();
 					break;
-				case Keyboard.ENTER:
-				case Keyboard.NUMPAD_ENTER:
+				case _settings.commandExecute:
+				case _settings.commandExecuteSecondary:
 					if (StringUtils.isWhitespace(_commandEntry.text))
 					{
 						event.stopImmediatePropagation();
@@ -231,6 +345,9 @@ package
 					}
 
 					clear();
+					break;
+				case _settings.suggestionToggle:
+					isSuggestionsVisible = !isSuggestionsVisible;
 					break;
 			}
 		}

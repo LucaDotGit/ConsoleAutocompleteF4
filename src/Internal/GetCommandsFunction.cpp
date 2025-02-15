@@ -2,18 +2,18 @@
 
 namespace Internal
 {
-	inline static const auto BLACKLIST = std::unordered_set<std::string_view>{
+	static const auto BLACKLIST = std::unordered_set<std::string_view>{
 		"UnlockWord"sv,
 		"TeachWord"sv,
 		"ADD NEW FUNCTIONS BEFORE THIS ONE!!!"sv
 	};
 
-	[[nodiscard]] inline static bool IsInvalid(const char* a_str) noexcept
+	[[nodiscard]] static bool IsInvalid(const char* a_str) noexcept
 	{
 		return !a_str || *a_str == '\0' || std::isspace(*a_str);
 	}
 
-	[[nodiscard]] inline static const char* SanitizeString(const char* a_str) noexcept
+	[[nodiscard]] static const char* SanitizeString(const char* a_str) noexcept
 	{
 		return IsInvalid(a_str) ? "" : a_str;
 	}

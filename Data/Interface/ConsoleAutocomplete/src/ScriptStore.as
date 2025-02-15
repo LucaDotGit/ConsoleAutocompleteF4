@@ -11,27 +11,27 @@ package
 
 		public function contains(name:String):Boolean
 		{
-			return _scripts.hasOwnProperty(name.toLowerCase());
+			return _scripts.hasOwnProperty(getKey(name));
 		}
 
 		public function getValue(name:String):ScriptFunction
 		{
-			return _scripts[name.toLowerCase()];
+			return _scripts[getKey(name)];
 		}
 
 		public function setValue(name:String, script:ScriptFunction):void
 		{
-			_scripts[name.toLowerCase()] = script;
+			_scripts[getKey(name)] = script;
 		}
 
 		public function add(script:ScriptFunction):void
 		{
-			_scripts[script.name.toLowerCase()] = script;
+			_scripts[getKey(script.name)] = script;
 		}
 
 		public function remove(name:String):void
 		{
-			delete _scripts[name.toLowerCase()];
+			delete _scripts[getKey(name)];
 		}
 
 		public function clear():void
@@ -57,6 +57,11 @@ package
 			}
 
 			return new ScriptIterator(list);
+		}
+
+		private static function getKey(name:String):String
+		{
+			return !name ? "" : name.toLowerCase();
 		}
 	}
 }

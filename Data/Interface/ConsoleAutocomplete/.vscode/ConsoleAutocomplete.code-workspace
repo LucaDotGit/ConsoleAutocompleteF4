@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "Root",
+			"path": "../../.."
+		},
+		{
+			"name": "Workspace",
+			"path": ".."
+		},
+		{
+			"name": "Source",
+			"path": "../src"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/meta.ini": true,
+			"**/*.esm": true,
+			"**/*.esl": true,
+			"**/*.esp": true
+		}
+	}
+}

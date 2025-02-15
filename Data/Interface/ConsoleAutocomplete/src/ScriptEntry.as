@@ -46,7 +46,7 @@ package
 		public function toString():String
 		{
 			var ref:String = _ref ? _ref + Separators.FUNCTION : "";
-			var args:String = _args.length > 0 ? Separators.WHITESPACE + _args.join(Separators.PARAMETER + Separators.WHITESPACE) : "";
+			var args:String = _args.length > 0 ? " " + _args.join(Separators.PARAMETER + " ") : "";
 			return ref + _func + args;
 		}
 	}
