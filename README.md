@@ -18,8 +18,8 @@ This adds VSCode-like autocompletion to the in-game console in Fallout 4.
 
 ## End User Dependencies
 
-- [Address Library for F4SE Plugins](https://www.nexusmods.com/fallout4/mods/47327)
 - [F4SE](https://f4se.silverlock.org)
+- [Address Library for F4SE Plugins](https://www.nexusmods.com/fallout4/mods/47327)
 
 ## Development
 
